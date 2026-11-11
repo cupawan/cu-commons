@@ -73,7 +73,7 @@ def test_garmin_rejected_key(monkeypatch):
     fake.PersonalApiAuthenticator, fake.GarminPersonalApiClient = Auth, object
     monkeypatch.setitem(sys.modules, "garmin_personal_api", fake)
     with pytest.raises(AuthError):
-        garmin.GarminPersonal(api_key="bad").client
+        _ = garmin.GarminPersonal(api_key="bad").client  # property access triggers the token exchange
     with pytest.raises(ValueError):
         garmin.GarminPersonal()
 
