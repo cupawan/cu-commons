@@ -10,8 +10,23 @@ import time
 from cu_commons.errors import ApiError, AuthError, NoDataError
 from cu_commons.http import request_json
 
+from urllib.parse import urlencode
+
 API = "https://www.strava.com/api/v3"
 TOKEN_URL = "https://www.strava.com/oauth/token"
+AUTHORIZE_URL = "https://www.strava.com/oauth/authorize"
+
+
+def authorization_url(client_id: str, redirect_uri: str = "http://localhost", scope: str = "read,activity:read_all") -> str:
+    """Open in a browser and approve; Strava redirects to redirect_uri?code=... (copy the code)."""
+    return AUTHORIZE_URL + "?" + urlencode({"client_id": client_id, "response_type": "code", "redirect_uri": redirect_uri,
+                                             "approval_prompt": "force", "scope": scope})
+
+
+def exchange_code(client_id: str, client_secret: str, code: str) -> dict:
+    """One-time: authorization code -> tokens. Store the returned refresh_token."""
+    return request_json("POST", TOKEN_URL, data={"client_id": client_id, "client_secret": client_secret,
+                                                 "code": code, "grant_type": "authorization_code"})
 
 
 class StravaClient:

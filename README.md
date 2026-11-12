@@ -9,8 +9,8 @@ Small, portable Python clients and helpers for personal automations — Telegram
 ## Install
 
 ```bash
-pip install "cu-commons[all] @ git+https://github.com/cupawan/cu-commons@v1.0.0"
-# or only what you need:  cu-commons[db]  cu-commons[garmin]  cu-commons[aws]
+pip install "cu-commons[all] @ git+https://github.com/cupawan/cu-commons@v1.1.0"
+# or only what you need:  cu-commons[db]  cu-commons[garmin]  cu-commons[aws]  cu-commons[sheets]
 ```
 Requires Python 3.12+.
 
@@ -18,15 +18,16 @@ Requires Python 3.12+.
 
 | Module | What it gives you | Extra |
 |---|---|---|
-| `cu_commons.telegram` | `TelegramBot` (send/edit messages, inline & reply keyboards, files, webhooks), `parse_update()` | — |
+| `cu_commons.telegram` | `TelegramBot` (send/edit messages, keyboards, documents/photos/audio, `download_file`, webhooks), `parse_update()` | — |
 | `cu_commons.email` | `SmtpEmail` (HTML, attachments; Gmail app-password defaults) | — |
 | `cu_commons.alerts` | `TelegramAlerter` for errors and notices | — |
-| `cu_commons.aws` | `lambda_handler` decorator (SSM secrets, alerts, error handling), `event_kind()` | `aws` for SSM |
+| `cu_commons.aws` | `lambda_handler` decorator (SSM secrets, alerts, error handling), `event_kind()`; `aws.s3` put/get bytes or JSON, `share_link` | `aws` |
 | `cu_commons.config` | `get()`, `load_ssm()`, `put_ssm()` | `aws` |
 | `cu_commons.db.postgres` | `Postgres` (TLS, wake-up retries, `fetch`, `execute`, `read_df`, read-only queries, `migrate()`) | `db` |
 | `cu_commons.db.mongo` | `Mongo` (insert, upsert, find, `ensure_indexes`) | `db` |
 | `cu_commons.apis.garmin` | `GarminPersonal` (official Personal API) + `sleep_metrics`, `hrv_metrics`, `daily_metrics` | `garmin` |
-| `cu_commons.apis.strava` | `StravaClient` with automatic token refresh and an `on_refresh` hook | — |
+| `cu_commons.apis.strava` | `StravaClient` with automatic token refresh and an `on_refresh` hook; `authorization_url()` / `exchange_code()` for setup | — |
+| `cu_commons.apis.sheets` | `Sheet` (Google Sheets: records, append, write, clear) | `sheets` |
 | `cu_commons.apis.openmeteo` | `forecast()`, `air_quality()`, `hourly_values()` (no API key) | — |
 | `cu_commons.dates`, `utils`, `http` | IST-aware dates, durations/pace, nested-JSON lookup, JSON over HTTP with retries | — |
 

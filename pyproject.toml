@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cu-commons"
-version = "1.0.0"
-description = "Small, portable clients and helpers for personal automations: Telegram, email, Postgres (Neon), MongoDB, Garmin Personal API, Strava, Open-Meteo, AWS Lambda."
+version = "1.1.0"
+description = "Small, portable clients and helpers for personal automations: Telegram, email, Postgres (Neon), MongoDB, Garmin Personal API, Strava, Open-Meteo, Google Sheets, AWS Lambda and S3."
 readme = "README.md"
 license = {text = "MIT"}
 authors = [{name = "Pawan Kumar"}]
@@ -16,7 +16,8 @@ dependencies = ["requests>=2.31"]
 db = ["SQLAlchemy>=2.0", "pg8000>=1.31", "pymongo>=4.6", "pandas>=2.2"]
 garmin = ["garmin-connect-personal-api-python>=1.0"]
 aws = ["boto3>=1.34"]
-all = ["cu-commons[db,garmin,aws]"]
+sheets = ["gspread>=6.0"]
+all = ["cu-commons[db,garmin,aws,sheets]"]
 dev = ["pytest>=8", "ruff>=0.6", "build>=1.2"]
 
 [project.urls]

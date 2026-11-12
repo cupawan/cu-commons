@@ -51,15 +51,33 @@ class TelegramBot:
 
     def send_document(self, chat_id, filename: str, content: bytes, caption: str | None = None,
                       mime_type: str = "application/octet-stream"):
+        return self._upload("sendDocument", "document", chat_id, filename, content, mime_type, caption)
+
+    def send_photo(self, chat_id, filename: str, content: bytes, caption: str | None = None):
+        return self._upload("sendPhoto", "photo", chat_id, filename, content, "image/png", caption)
+
+    def send_audio(self, chat_id, filename: str, content: bytes, caption: str | None = None,
+                   mime_type: str = "audio/mpeg"):
+        return self._upload("sendAudio", "audio", chat_id, filename, content, mime_type, caption)
+
+    def _upload(self, method, field, chat_id, filename, content, mime_type, caption):
         data = {"chat_id": chat_id}
         if caption:
             data["caption"] = caption[:1024]
-        response = requests.post(f"{self.base}/sendDocument", data=data,
-                                 files={"document": (filename, content, mime_type)}, timeout=self.timeout * 2)
+        response = requests.post(f"{self.base}/{method}", data=data, files={field: (filename, content, mime_type)},
+                                 timeout=self.timeout * 2)
         body = response.json() if response.content else {}
         if not body.get("ok"):
-            raise ApiError(f"Telegram sendDocument failed: {body}", response.status_code)
+            raise ApiError(f"Telegram {method} failed: {body}", response.status_code)
         return body["result"]
+
+    def download_file(self, file_id: str) -> bytes:
+        """Bytes of a file a user sent (document, photo, voice...). Bot API limit: 20 MB."""
+        file_path = self.call("getFile", file_id=file_id)["file_path"]
+        response = requests.get(f"{self.base.replace('/bot', '/file/bot', 1)}/{file_path}", timeout=self.timeout * 2)
+        if response.status_code != 200:
+            raise ApiError(f"Telegram file download failed: {response.status_code}", response.status_code)
+        return response.content
 
     # ---- webhooks
     def set_webhook(self, url: str, secret_token: str | None = None, drop_pending: bool = False):
@@ -98,7 +116,10 @@ def parse_update(update: dict | str) -> dict:
                 "chat_id": (message.get("chat") or {}).get("id"), "message_id": message.get("message_id"),
                 "callback_id": callback.get("id"), "data": callback.get("data") or "", "text": None}
     message = update.get("message") or update.get("edited_message") or {}
-    kind = "document" if message.get("document") else "text" if "text" in message else "other"
+    kind = ("document" if message.get("document") else "photo" if message.get("photo")
+            else "voice" if message.get("voice") else "text" if "text" in message else "other")
     return {"kind": kind, "user_id": (message.get("from") or {}).get("id"),
             "chat_id": (message.get("chat") or {}).get("id"), "message_id": message.get("message_id"),
-            "text": message.get("text"), "document": message.get("document"), "callback_id": None, "data": None}
+            "text": message.get("text") or message.get("caption"), "document": message.get("document"),
+            "photo_file_id": (message.get("photo") or [{}])[-1].get("file_id"),  # largest size
+            "voice": message.get("voice"), "callback_id": None, "data": None}
