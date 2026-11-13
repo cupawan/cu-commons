@@ -1,6 +1,6 @@
 # cu-commons
 
-Small, portable Python clients and helpers for personal automations — Telegram bots, email, Postgres (Neon), MongoDB, Garmin's official Personal API, Strava, Open-Meteo weather, and AWS Lambda plumbing.
+Small, portable Python clients and helpers for personal automations — Telegram bots, GitHub repo files, email, Postgres (Neon), MongoDB, Garmin's official Personal API, Strava, Open-Meteo weather, and AWS Lambda plumbing.
 
 - **Explicit configuration:** every client takes its credentials as arguments; `from_env()` is an optional shortcut. Nothing reads secrets behind your back.
 - **Resilient by default:** HTTP calls have timeouts and retry on rate limits / server errors (honouring `Retry-After`); Neon's scale-to-zero wake-up is retried.
@@ -9,7 +9,7 @@ Small, portable Python clients and helpers for personal automations — Telegram
 ## Install
 
 ```bash
-pip install "cu-commons[all] @ git+https://github.com/cupawan/cu-commons@v1.1.0"
+pip install "cu-commons[all] @ git+https://github.com/cupawan/cu-commons@v1.2.0"
 # or only what you need:  cu-commons[db]  cu-commons[garmin]  cu-commons[aws]  cu-commons[sheets]
 ```
 Requires Python 3.12+.
@@ -27,6 +27,7 @@ Requires Python 3.12+.
 | `cu_commons.db.mongo` | `Mongo` (insert, upsert, find, `ensure_indexes`) | `db` |
 | `cu_commons.apis.garmin` | `GarminPersonal` (official Personal API) + `sleep_metrics`, `hrv_metrics`, `daily_metrics` | `garmin` |
 | `cu_commons.apis.strava` | `StravaClient` with automatic token refresh and an `on_refresh` hook; `authorization_url()` / `exchange_code()` for setup | — |
+| `cu_commons.apis.github` | `GitHubRepo` (read a file, commit a change; `update_text` / `update_json` re-apply on concurrent edits) | — |
 | `cu_commons.apis.sheets` | `Sheet` (Google Sheets: records, append, write, clear) | `sheets` |
 | `cu_commons.apis.openmeteo` | `forecast()`, `air_quality()`, `hourly_values()` (no API key) | — |
 | `cu_commons.dates`, `utils`, `http` | IST-aware dates, durations/pace, nested-JSON lookup, JSON over HTTP with retries | — |
@@ -64,6 +65,15 @@ from cu_commons.aws import lambda_handler
 @lambda_handler("my-service")        # loads SSM_PREFIX secrets, alerts via AlertsBotToken/SelfTgChatId if set
 def handler(event, context):
     ...
+```
+
+```python
+from cu_commons.apis.github import GitHubRepo
+
+repo = GitHubRepo(token, "cupawan/PFOS", branch="dev")   # fine-grained token: this repo, Contents read+write
+repo.update_json("config/lending.json",
+                 lambda d: d["entries"].append({"date": "2026-11-13", "person": "Raman", "type": "lent", "amount": 92}),
+                 "exec: Raman 92 (via bot)")              # retries if you pushed in between
 ```
 
 ## Development

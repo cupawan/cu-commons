@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cu-commons"
-version = "1.1.0"
-description = "Small, portable clients and helpers for personal automations: Telegram, email, Postgres (Neon), MongoDB, Garmin Personal API, Strava, Open-Meteo, Google Sheets, AWS Lambda and S3."
+version = "1.2.0"
+description = "Small, portable clients and helpers for personal automations: Telegram, email, Postgres (Neon), MongoDB, Garmin Personal API, Strava, Open-Meteo, Google Sheets, GitHub repository files, AWS Lambda and S3."
 readme = "README.md"
 license = {text = "MIT"}
 authors = [{name = "Pawan Kumar"}]

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.0 — 2026-11-13
+Added:
+- `apis.github.GitHubRepo`: `get_file` / `get_json`, `put_file` (one commit), and `update_text` / `update_json`
+  that re-read and re-apply the change when the file moved on (HTTP 409/422), so bot commits and laptop pushes
+  can't overwrite each other. `update_json(dumps=...)` keeps a hand-formatted file's layout. 401/403 raise
+  `AuthError` with a hint about token scope. No new dependencies.
+
 ## 1.1.0 — 2026-11-12
 Added (pieces worth keeping from the retired Telegram_Bots / ETLFS_Pipelines / Python_Packages repos):
 - `TelegramBot.download_file()`, `send_photo()`, `send_audio()`; `parse_update()` now reports photos, voice notes and captions.
